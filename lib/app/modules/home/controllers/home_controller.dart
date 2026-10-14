@@ -17,12 +17,12 @@ class HomeController extends GetxController {
     super.onInit();
   }
 
-Future<void> fetchIncome({String? token}) async {
+Future<void> fetchIncome() async {
   try {
     isLoading.value = true;
     errorMessage.value = '';
 
-    final response = await _repo.getIncome(token: token);
+    final response = await _repo.getIncome();
 
     incomeList.value = response.data;
     totalIncome.value = response.totalAmount;

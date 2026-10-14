@@ -1,4 +1,3 @@
-import 'package:budgetbook_2026/app/core/storage/token_manager.dart';
 import 'package:budgetbook_2026/app/core/theme/app_theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -10,13 +9,12 @@ import 'app/routes/app_pages.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await TokenManager().init();
-
-  // Static Token Later Save token from Login Response
-  await TokenManager().setToken(
+  // Backend API token is stored after Firebase verification.
+  /*
     "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjdXN0b21lciIsImxvZ2luSWQiOiIzMiIsImlhdCI6MTc3NjA1ODc4MiwiZXhwIjoxNzc2MDYyMzgyfQ.qOEssv3eLOWzPQKCVgb2zy_GvXX2OVLr3v6uVcJLusY",
   );
   
+  */
   await Firebase.initializeApp();
 
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -36,7 +34,6 @@ void main() async {
 
   runApp(const MyApp());
 }
-
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -89,7 +86,7 @@ class RootApp extends StatelessWidget {
             ),
 
             SafeArea(
-              top: false, 
+              top: false,
               bottom: true,
               child: child ?? const SizedBox(),
             ),

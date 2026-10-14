@@ -7,8 +7,8 @@ class IncomeRepository {
   final IncomeService _service = IncomeService();
 
 // Income GET
-  Future<IncomeResponse> getIncome({String? token}) async {
-    return await _service.fetchIncome(token: token);
+  Future<IncomeResponse> getIncome() async {
+    return await _service.fetchIncome();
   }
 // Income POST
 Future<bool> addIncome({

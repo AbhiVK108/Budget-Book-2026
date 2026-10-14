@@ -4,8 +4,8 @@ import 'package:budgetbook_2026/app/data/services/expense_api_service.dart';
 class ExpenseRepository {
   final ExpenseService _service = ExpenseService();
 
-  Future<ExpenseResponse> getExpense({String? token}) async {
-    return await _service.fetchExpense(token: token);
+  Future<ExpenseResponse> getExpense() async {
+    return await _service.fetchExpense();
   }
 
   Future<bool> addExpense({

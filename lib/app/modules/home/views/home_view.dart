@@ -26,50 +26,40 @@ class HomeView extends GetView<HomeController> {
                   child: Opacity(opacity: value, child: child),
                 );
               },
-              child: Obx(() {
-                if (controller.isLoading.value) {
-                  return const Center(child: CircularProgressIndicator());
-                }
+              child: Column(
+                children: [
+                  _glassHeader(),
+                  SizedBox(height: 5.h),
 
-                if (controller.errorMessage.isNotEmpty) {
-                  return Center(child: Text(controller.errorMessage.value));
-                }
-
-                return Column(
-                  children: [
-                    _glassHeader(),
-                    SizedBox(height: 5.h),
-
-                    Text(
-                      "B U D G E T  B O O K",
-                      style: TextStyle(
-                        fontFamily: 'BalooBhai2',
-                        fontSize: 22.sp,
-                        color: Colors.grey.shade200,
-                        letterSpacing: 4,
-                        fontWeight: FontWeight.w600,
-                      ),
+                  Text(
+                    "B U D G E T  B O O K",
+                    style: TextStyle(
+                      fontFamily: 'BalooBhai2',
+                      fontSize: 22.sp,
+                      color: Colors.grey.shade200,
+                      letterSpacing: 4,
+                      fontWeight: FontWeight.w600,
                     ),
+                  ),
 
-                    // SizedBox(height: 15.h),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16.w),
-                      child: _walletAnalyticsBookCard(context), // dynamic now
-                    ),
+                  // SizedBox(height: 15.h),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.w),
+                    child: _walletAnalyticsBookCard(context), // dynamic now
+                  ),
 
-                    SizedBox(height: 15.h),
+                  SizedBox(height: 15.h),
 
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16.w),
-                      child: incomeExpenseCard(), // dynamic now
-                    ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.w),
+                    child: incomeExpenseCard(), // dynamic now
+                  ),
 
-                    SizedBox(height: 15.h),
+                  SizedBox(height: 15.h),
 
-                    _categorySection(),
-                  ],
-                );
-              }),
+                  _categorySection(),
+                ],
+              ),
             ),
           ],
         ),

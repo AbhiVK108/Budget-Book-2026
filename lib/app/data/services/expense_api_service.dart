@@ -9,7 +9,7 @@ class ExpenseService {
   ////////////////////////////////////////////////////////////
   /// GET EXPENSE
   ////////////////////////////////////////////////////////////
-  Future<ExpenseResponse> fetchExpense({String? token}) async {
+  Future<ExpenseResponse> fetchExpense() async {
     try {
       final response = await _apiClient.dio.get(
         AppUrl.allExpense, // 🔥 new endpoint

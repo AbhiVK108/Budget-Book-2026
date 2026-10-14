@@ -7,7 +7,7 @@ class IncomeService {
   final ApiClient _apiClient = ApiClient();
 
 // Income GET
-  Future<IncomeResponse> fetchIncome({String? token}) async {
+  Future<IncomeResponse> fetchIncome() async {
     try {
       final response = await _apiClient.dio.get(
         AppUrl.allIncome,

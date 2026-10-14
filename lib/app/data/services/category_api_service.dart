@@ -7,7 +7,7 @@ class CategoryApiService {
   final ApiClient _apiClient = ApiClient();
 
   // Categories GET
-  Future<CategoryResponse> fetchCategories({String? token}) async {
+  Future<CategoryResponse> fetchCategories() async {
     try {
       final response = await _apiClient.dio.get(
         AppUrl.allCategories, // your endpoint

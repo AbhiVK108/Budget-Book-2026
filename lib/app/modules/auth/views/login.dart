@@ -1,5 +1,6 @@
 import 'package:budgetbook_2026/app/modules/auth/controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
@@ -90,15 +91,29 @@ class Login extends GetView<AuthController> {
                           children: [
                             _phoneField(isDark),
 
-                            SizedBox(height: 20.h),
-
-                            ////////////////////////////////////////////////////
-                            /// OTP FIELD (INLINE)
-                            ////////////////////////////////////////////////////
+                            if (controller.isOtpSent.value) ...[
+                              SizedBox(height: 14.h),
+                              Text(
+                                "Enter the 6-digit code sent to +91 ${controller.phoneController.text.trim()}",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontFamily: "BalooBhai2",
+                                  fontSize: 10.sp,
+                                  color: isDark
+                                      ? Colors.white70
+                                      : Colors.black54,
+                                ),
+                              ),
+                              SizedBox(height: 16.h),
                               TextField(
                                 controller: controller.otpController,
+                                focusNode: controller.otpFocusNode,
                                 keyboardType: TextInputType.number,
-                                autofocus: true,
+                                textInputAction: TextInputAction.done,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                  LengthLimitingTextInputFormatter(6),
+                                ],
                                 maxLength: 6,
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
@@ -107,7 +122,8 @@ class Login extends GetView<AuthController> {
                                   letterSpacing: 8,
                                 ),
                                 decoration: InputDecoration(
-                                  labelText: "Enter OTP",
+                                  labelText: "Verification code",
+                                  hintText: "6-digit OTP",
                                   counterText: "",
                                   filled: true,
                                   fillColor: isDark
@@ -119,49 +135,107 @@ class Login extends GetView<AuthController> {
                                   ),
                                 ),
                               ),
-
                               SizedBox(height: 16.h),
-
                               SizedBox(
                                 height: 52.h,
                                 width: double.infinity,
                                 child: ElevatedButton(
-                                  onPressed: controller.verifyOtp,
+                                  onPressed: controller.isVerifyingOtp.value
+                                      ? null
+                                      : controller.verifyOtp,
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.teal,
+                                    disabledBackgroundColor: Colors.teal
+                                        .withOpacity(.55),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(30.r),
                                     ),
                                   ),
-                                  child: const Text("Verify OTP"),
+                                  child: controller.isVerifyingOtp.value
+                                      ? const SizedBox(
+                                          height: 22,
+                                          width: 22,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            color: Colors.white,
+                                          ),
+                                        )
+                                      : const Text(
+                                          "Verify OTP",
+                                          style: TextStyle(color: Colors.white),
+                                        ),
                                 ),
                               ),
-
-                            SizedBox(height: 20.h),
-
-                            ////////////////////////////////////////////////////
-                            /// SEND / RESEND OTP BUTTON
-                            ////////////////////////////////////////////////////
-                            SizedBox(
-                              height: 52.h,
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                onPressed: controller.sendOtp,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.teal,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30.r),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  TextButton(
+                                    onPressed:
+                                        controller.canResend.value &&
+                                            !controller.isSendingOtp.value
+                                        ? controller.resendOtp
+                                        : null,
+                                    child: Text(
+                                      controller.canResend.value
+                                          ? "Resend code"
+                                          : "Resend in ${controller.resendSeconds.value}s",
+                                      style: TextStyle(
+                                        fontFamily: "BalooBhai2",
+                                        fontSize: 12.sp,
+                                      ),
+                                    ),
                                   ),
-                                ),
-                                child: Text(
-                                  controller.isOtpSent.value
-                                      ? "Resend OTP"
-                                      : "Send OTP",
+                                  TextButton(
+                                    onPressed:
+                                        controller.isSendingOtp.value ||
+                                            controller.isVerifyingOtp.value
+                                        ? null
+                                        : controller.changePhoneNumber,
+                                    child: Text(
+                                      "Change number",
+                                      style: TextStyle(
+                                        fontFamily: "BalooBhai2",
+                                        fontSize: 12.sp,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ] else ...[
+                              SizedBox(height: 20.h),
+                              SizedBox(
+                                height: 52.h,
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  onPressed:
+                                      controller.isPhoneValid.value &&
+                                          !controller.isSendingOtp.value
+                                      ? controller.sendOtp
+                                      : null,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.teal,
+                                    disabledBackgroundColor: Colors.teal
+                                        .withOpacity(.55),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30.r),
+                                    ),
+                                  ),
+                                  child: controller.isSendingOtp.value
+                                      ? const SizedBox(
+                                          height: 22,
+                                          width: 22,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            color: Colors.white,
+                                          ),
+                                        )
+                                      : const Text(
+                                          "Send OTP",
+                                          style: TextStyle(color: Colors.white),
+                                        ),
                                 ),
                               ),
-                            ),
-                          
-                          
+                            ],
                           ],
                         ),
                       );
@@ -197,14 +271,22 @@ class Login extends GetView<AuthController> {
         TextField(
           controller: controller.phoneController,
           keyboardType: TextInputType.phone,
+          textInputAction: TextInputAction.done,
+          readOnly: controller.isOtpSent.value,
+          maxLength: 10,
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+            LengthLimitingTextInputFormatter(10),
+          ],
           style: TextStyle(fontFamily: "BalooBhai2", fontSize: 14.sp),
           decoration: InputDecoration(
             prefixText: "+91 ",
+            counterText: "",
             filled: true,
             fillColor: isDark
                 ? const Color(0xFF2A2A2A)
                 : const Color(0xFFF5F5F5),
-            hintText: "98765 43210",
+            hintText: "Enter Mobile Number",
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14.r),
               borderSide: BorderSide.none,

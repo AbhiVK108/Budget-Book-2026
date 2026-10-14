@@ -5,8 +5,8 @@ class CategoryRepo {
   final CategoryApiService _service = CategoryApiService();
 
   // Categories GET
-Future<CategoryResponse> getCategories({String? token}) async {
-  return await _service.fetchCategories(token: token);
+Future<CategoryResponse> getCategories() async {
+  return await _service.fetchCategories();
 }
 // Post Category
 Future<bool> createCategory({
